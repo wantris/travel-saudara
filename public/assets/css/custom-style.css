@@ -1,0 +1,228 @@
+.border-radius-20 {
+    border-radius: 20px !important;
+}
+.shadow {
+    box-shadow: 0 10px 20px 0 rgb(0 0 0 / 5%) !important;
+}
+
+.shadow-1 {
+    box-shadow: 0px 1px 2px rgb(3 18 26 / 20%) !important;
+}
+
+.fs-3 {
+    font-size: calc(1.3rem + 0.6vw) !important;
+}
+
+.rounded-start {
+    border-top-left-radius: 0.25rem !important;
+    border-bottom-left-radius: 0.25rem !important;
+    border-top-right-radius: 0 !important;
+    border-bottom-right-radius: 0 !important;
+}
+
+.rounded-end {
+    border-bottom-right-radius: 0.25rem !important;
+    border-top-right-radius: 0.25rem !important;
+    border-top-left-radius: 0 !important;
+    border-bottom-left-radius: 0 !important;
+}
+
+.card-services {
+    border: none;
+    border-radius: 0.6em !important;
+    box-shadow: 0 10px 20px 0 rgba(0, 0, 0, 0.05) !important;
+}
+
+.service-title {
+    color: #dc3545;
+}
+
+.btn-floating.btn-lg,
+.btn-group-lg > .btn-floating.btn {
+    width: 2.8125rem;
+    height: 2.8125rem;
+}
+
+.btn-floating,
+[class*="btn-outline-"].btn-floating {
+    border-radius: 50%;
+    padding: 0;
+    position: relative;
+}
+
+.border-end {
+    border-right: 1px solid #e0e0e0 !important;
+}
+
+.why-title h2 {
+    font-size: 30px;
+}
+
+.why-content {
+    color: #546071;
+    font-family: NunitoSansRegular, sans-serif;
+    font-size: 16px;
+    letter-spacing: 0.005em;
+    line-height: 1.5rem;
+}
+
+.city-travel-img {
+    width: 100px;
+    border: 2px solid white;
+    box-shadow: 0 10px 20px 0 rgb(0 0 0 / 30%);
+}
+
+.fl-left {
+    float: left;
+}
+
+.fl-right {
+    float: right;
+}
+
+.card-ticket {
+    display: table-row;
+    width: 100%;
+    background-color: #fff;
+    color: #989898;
+    font-family: "Oswald", sans-serif;
+    text-transform: uppercase;
+    border-radius: 4px;
+    position: relative;
+}
+
+.card + .card {
+    margin-left: 2%;
+}
+
+.date-ticket {
+    display: table-cell;
+    width: 25%;
+    position: relative;
+    text-align: center;
+    border-right: 2px dashed #dadde6;
+}
+
+.date-ticket:before,
+.date-ticket:after {
+    content: "";
+    display: block;
+    width: 30px;
+    height: 30px;
+    background-color: #fff;
+    border: 1px solid #dee2e6 !important;
+    position: absolute;
+    top: -15px;
+    right: -15px;
+    z-index: 1;
+    border-radius: 50%;
+}
+
+.date-ticket:after {
+    top: auto;
+    bottom: -15px;
+}
+
+.date-ticket time {
+    display: block;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    -webkit-transform: translate(-50%, -50%);
+    -ms-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+}
+
+.date-ticket time span {
+    display: block;
+}
+
+.date-ticket time span:first-child {
+    color: #2b2b2b;
+    font-weight: 600;
+    font-size: 250%;
+}
+
+.date-ticket time span:last-child {
+    text-transform: uppercase;
+    font-weight: 600;
+    margin-top: -10px;
+}
+
+.card-cont {
+    display: table-cell;
+    width: 100%;
+    font-size: 85%;
+    padding: 10px 10px 30px 50px;
+}
+
+.card-cont h3 {
+    color: #3c3c3c;
+    font-size: 130%;
+}
+
+.row:last-child .card:last-of-type .card-cont h3 {
+    text-decoration: line-through;
+}
+
+.card-cont > div {
+    display: table-row;
+}
+
+.card-cont .even-date i,
+.card-cont .even-info i,
+.card-cont .even-date time,
+.card-cont .even-info p {
+    display: table-cell;
+}
+
+.card-cont .even-date i,
+.card-cont .even-info i {
+    padding: 0% 5% 0 0;
+}
+
+.card-cont .even-info p {
+    padding: 0px 50px 0 20px;
+}
+
+.card-cont .even-date time span {
+    display: block;
+}
+
+.card-cont a {
+    display: block;
+    text-decoration: none;
+    width: 80px;
+    height: 30px;
+    color: #ff5757;
+    text-align: center;
+    line-height: 30px;
+    position: absolute;
+    right: 60px;
+    bottom: 10px;
+    font-size: 1.3rem;
+}
+
+.row:last-child .card:first-child .card-cont a {
+    background-color: #037fdd;
+}
+
+.row:last-child .card:last-child .card-cont a {
+    background-color: #f8504c;
+}
+
+@media screen and (max-width: 860px) {
+    .card-ticket {
+        display: block;
+        float: none;
+        width: 100%;
+        margin-bottom: 10px;
+    }
+    .card-ticket + .card-ticket {
+        margin-left: 0;
+    }
+    .card-cont .even-date,
+    .card-cont .even-info {
+        font-size: 75%;
+    }
+}
