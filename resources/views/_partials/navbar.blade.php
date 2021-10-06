@@ -20,11 +20,12 @@
                                         {{-- <li><a class="" href="travel_destination.html">Carter</a></li>
                                         <li><a class="" href="travel_destination.html">Paket</a></li> --}}
                                         <li><a class="" href="travel_destination.html">Blog</a></li>
+                                        <li class="d-block d-md-block d-sm-none d-lg-none d-xl-none"><a href="#"><i class="fas fa-user-circle mr-2 "></i>Login </a></li>
                                     </ul>
                                 </nav>
                             </div>
                         </div>
-                        <div class="col-xl-4 col-lg-4 d-none d-lg-block">
+                        <div class="col-xl-5 col-lg-5 d-none d-lg-block">
                             <div class="social_wrap d-flex align-items-center justify-content-end">
                                 <div class="number">
                                     <p> <i class="fa fa-phone"></i> 10(256)-928 256</p>
@@ -34,14 +35,27 @@
                                         <li><a href="#"> <i class="fab fa-instagram"></i> </a></li>
                                         <li><a href="#"> <i class="fab fa-youtube"></i> </a></li>
                                         <li><a href="#"> <i class="fab fa-facebook-f"></i> </a></li>
+                                        <li>
+                                            <a href="{{route('landing.auth.login')}}"><i class="fas fa-user-circle mr-2 "></i>Login </a>
+                                            {{-- <div class="dropdown show">
+                                                <a class="dropdown-toggle" href="#" role="button" id="navbar-menu-login"
+                                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                    <img src="" class="d-inline mr-1" style="width: 30px; height:30px; border-radius:20px" alt="">
+                                                    asdasd
+                                                    <i class="icofont-rounded-down d-inline mt-2 text-secondary" id="arrow-icon"></i>
+                                                </a>
+                                                <div class="dropdown-menu mr-4" aria-labelledby="navbar-menu-login">
+                                                
+                                                    <a class="dropdown-item text-center px-2 py-2" href=""></a>
+                                                    <a class="dropdown-item text-center px-2 py-2" href="">Ganti
+                                                        Password</a>
+                                                    <a class="dropdown-item text-center px-2 py-2" href="">Sign out</a>
+                                                </div>
+                                            </div> --}}
+                                        </li>
                                     </ul>
                                 </div>
                             </div>
-                        </div>
-                        <div class="seach_icon">
-                            <a data-toggle="modal" data-target="#exampleModalCenter" href="#">
-                                <i class="fa fa-search"></i>
-                            </a>
                         </div>
                         <div class="col-12">
                             <div class="mobile_menu d-block d-lg-none"></div>

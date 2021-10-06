@@ -1,6 +1,19 @@
+.center {
+    margin: 0;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-right: -50%;
+    transform: translate(-50%, -50%);
+}
+
 .border-radius-20 {
     border-radius: 20px !important;
 }
+.border-bottom-primary {
+    border-bottom: 3px solid #ff5757;
+}
+
 .shadow {
     box-shadow: 0 10px 20px 0 rgb(0 0 0 / 5%) !important;
 }
@@ -11,6 +24,18 @@
 
 .fs-3 {
     font-size: calc(1.3rem + 0.6vw) !important;
+}
+
+.display-6 {
+    font-size: calc(1.375rem + 1.5vw);
+    font-weight: 300;
+    line-height: 1.2;
+}
+
+.btn-check {
+    position: absolute;
+    clip: rect(0, 0, 0, 0);
+    pointer-events: none;
 }
 
 .rounded-start {

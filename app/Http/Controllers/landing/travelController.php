@@ -29,4 +29,19 @@ class travelController extends Controller
     {
         return view('shuttle.reservation', compact('code'));
     }
+
+    public function payment($code)
+    {
+        return view('shuttle.payment', compact('code'));
+    }
+
+    public function paymentSingle($code)
+    {
+        return view('shuttle.payment_single', compact('code'));
+    }
+
+    public function uploadTransfer($code)
+    {
+        return view('shuttle.upload_transfer', compact('code'));
+    }
 }

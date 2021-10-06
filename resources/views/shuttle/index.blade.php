@@ -8,19 +8,14 @@
 
 @section('content')
 
-<!-- bradcam_area  -->
-<div class="bradcam_area bradcam_bg_3 mb-3">
-    <div class="container">
-        <div class="row">
-            <div class="col-xl-12">
-                <div class="bradcam_text text-center">
-                    <h3>Travel Reguler</h3>
-                </div>
-            </div>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12 p-0">
+            <img src="{{url('assets/img/banner/banner-trans.png')}}" style="max-height: 650px" class="img-fluid" alt="">
         </div>
     </div>
 </div>
-<!--/ bradcam_area  -->
+
 
 <div class="container">
     <div class="row justify-content-center mt-5">
@@ -164,7 +159,9 @@
     <script>
         $(document).ready(function() {
 
-            AOS.init();
+            var myBG = $(".bradcam_area").data('bg');
+            console.log(myBG);      
+            $(".bradcam_area").css('background', 'url('+myBG+')');
             
             $('#date-travel').daterangepicker({
                 locale: {

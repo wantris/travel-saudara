@@ -2090,7 +2090,7 @@ h3 {
 
 /* line 13, ../../Arafath/CL/December/231. Travel-02/HTML/scss/_bradcam.scss */
 .bradcam_area {
-    background-size: cover;
+    background-size: 1920px 650px !important;
     background-position: center center;
     padding: 175px 0;
     background-repeat: no-repeat;
