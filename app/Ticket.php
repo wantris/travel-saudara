@@ -11,6 +11,6 @@ class Ticket extends Model
 
     public function reservationRef()
     {
-        return $this->belongsTo(Reservation::class, 'reservation_id', 'id');
+        return $this->belongsTo(Reservation::class, 'reservation_code', 'code');
     }
 }

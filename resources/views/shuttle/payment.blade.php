@@ -27,13 +27,7 @@
                     <div class="col-12">
                         <div class="form-group">
                             <label for="">Nama Pemesan <span class="text-danger">*</span></label>
-                            <input type="text" name="name" class="form-control border-secondary" disabled placeholder="Nama Pemesan" value="Wantris" style="height: 40px !important;">
-                        </div>
-                    </div>
-                    <div class="col-12">
-                        <div class="form-group">
-                            <label for="">kode Tagihan <span class="text-danger">*</span></label>
-                            <input type="text" name="name" class="form-control border-secondary" disabled placeholder="Kode Tagihan" value="TAG-4428-264" style="height: 40px !important;">
+                            <input type="text" name="name" class="form-control border-secondary" disabled placeholder="Nama Pemesan" value="{{$code->fullname}}" style="height: 40px !important;">
                         </div>
                     </div>
                     <div class="col-12">

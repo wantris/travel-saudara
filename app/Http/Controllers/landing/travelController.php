@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\models\City;
 use App\models\Route;
 use App\models\Vehicle;
+use App\Reservation;
 use App\Schedule;
 use App\Ticket;
 use Illuminate\Http\Request;
@@ -96,7 +97,52 @@ class travelController extends Controller
             'price' => 'required',
         ]);
 
-        dd($request->all());
+        try {
+
+            $check = Reservation::latest()->first();
+            if ($check) {
+                $parts =  preg_split("/[-]/", $check->code);
+                (string)$new_number = sprintf("%07d", (int)$parts[1] + 1);
+                $new_code = "ODR-" . $new_number;
+            } else {
+                $new_code = "ODR-0000001";
+            }
+
+            $order = new Reservation();
+            $order->code = $new_code;
+            $order->schedule_id = $request->schedule_id;
+            $order->fullname = $request->full_name;
+            $order->email = $request->email;
+            $order->wa_number = $request->wa_number;
+            $order->total_seats = $request->total_seat;
+            $order->subtotal = $request->price;
+            $order->save();
+
+            if ($order) {
+                $schedule = Schedule::find($request->schedule_id);
+
+                foreach ($request->seat_number as $key => $item) {
+                    $check_ticket = Ticket::latest()->first();
+                    if ($check_ticket) {
+                        $ticket_parts =  preg_split("/[-]/", $check_ticket->ticket_code);
+                        (string)$new_number = sprintf("%07d", (int)$ticket_parts[1] + 1);
+                        $ticket_code = "TST-" . $new_number;
+                    } else {
+                        $ticket_code = "TST-0000001";
+                    }
+                    $ticket = new Ticket();
+                    $ticket->ticket_code = $ticket_code;
+                    $ticket->reservation_code = $order->code;
+                    $ticket->seat_number = $item;
+                    $ticket->price = $schedule->price;
+                    $ticket->save();
+                }
+            }
+
+            return redirect()->route('landing.shuttle.reservation.payment', $order->code);
+        } catch (\Throwable $th) {
+            return redirect()->back()->with('failed', 'Reservasi gagal');
+        }
     }
 
     public function seatList()
@@ -132,7 +178,9 @@ class travelController extends Controller
 
     public function payment($code)
     {
-        return view('shuttle.payment', compact('code'));
+        $order = Reservation::with('scheduleRef', 'ticketRef')->find($code);
+
+        return view('shuttle.payment', compact('code', 'order'));
     }
 
     public function paymentSingle($code)

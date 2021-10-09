@@ -126,7 +126,7 @@
                 <form action="{{route('landing.shuttle.reservation.save')}}" method="post" enctype="multipart/form-data">
                     @csrf
                     <input type="hidden" name="code" value="{{$code}}">
-                    <input type="hidden" name="schdule_id" value="{{$id}}">
+                    <input type="hidden" name="schedule_id" value="{{$id}}">
                     <div class="card-body">
                         <div class="text-center">
                             <h3 class="text-secondary">Data Pemesan</h3>
@@ -138,6 +138,9 @@
                                 </span>
                                 <input type="text" name="full_name" class="form-control border-danger" placeholder="Nama Lengkap" style="height: 40px !important;">
                             </div>
+                            @if ($errors->has('full_name'))
+                                <span class="text-danger">{{ $errors->first('full_name') }}</span>
+                            @endif
                         </div>
                         <div class="mt-4">
                             <div class="input-group">
@@ -146,6 +149,9 @@
                                 </span>
                                 <input type="text" name="email" class="form-control border-danger" placeholder="Email" style="height: 40px !important;">
                             </div>
+                            @if ($errors->has('email'))
+                                <span class="text-danger">{{ $errors->first('email') }}</span>
+                            @endif
                         </div>
                         <div class="mt-4">
                             <div class="input-group">
@@ -154,6 +160,9 @@
                                 </span>
                                 <input type="text" name="wa_number" class="form-control border-danger" placeholder="Nomor Whatsapp" style="height: 40px !important;">
                             </div>
+                            @if ($errors->has('wa_number'))
+                                <span class="text-danger">{{ $errors->first('wa_number') }}</span>
+                            @endif
                         </div>
                         <div class="mt-4">
                             <div class="input-group">
@@ -162,6 +171,9 @@
                                 </span>
                                 <input type="text" name="total_seat" class="form-control border-danger" id="total-seats-text" placeholder="Total Kursi" style="height: 40px !important;">
                             </div>
+                            @if ($errors->has('toal_seat'))
+                                <span class="text-danger">{{ $errors->first('toal_seat') }}</span>
+                            @endif
                         </div>
                         <div class="mt-4">
                             <div class="input-group">
