@@ -31,4 +31,14 @@ Route::group(['prefix' => 'vehicle', 'middleware' => ['web']], function () {
     Route::get('/detail/{id}', 'admin\vehicleController@detail')->name('admin.vehicle.detail');
     Route::delete('/seat/delete', 'admin\vehicleController@deleteSeat')->name('admin.vehicle.delete.seat');
     Route::get('/addseat/{id}', 'admin\vehicleController@addSeat')->name('admin.vehicle.addSeat');
+    Route::post('/seat/status', 'admin\vehicleController@updateSeatStatus')->name('admin.vehicle.status.seat');
+});
+
+Route::group(['prefix' => 'schedule', 'middleware' => ['web']], function () {
+    Route::get('/', 'admin\scheduleController@index')->name('admin.schedule.index');
+    Route::get('/create', 'admin\scheduleController@create')->name('admin.schedule.create');
+    Route::post('/create', 'admin\scheduleController@save')->name('admin.schedule.save');
+    Route::get('/edit/{id}', 'admin\scheduleController@edit')->name('admin.schedule.edit');
+    Route::patch('/edit', 'admin\scheduleController@update')->name('admin.schedule.update');
+    Route::delete('/delete', 'admin\scheduleController@delete')->name('admin.schedule.delete');
 });

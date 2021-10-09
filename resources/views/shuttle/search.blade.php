@@ -12,12 +12,15 @@
     <div class="row p-2">
         <div class="col-12">
             <div class="fs-3 fw-lighter">
-                <i class="fas fs-4 fa-map-marker-alt text-danger"></i>&nbsp; <b>JAKARTA</b>
-                &nbsp;&nbsp;<i class="fas fs-5 fa-chevron-right text-black-50" style="font-size: .7em;"></i> &nbsp; TEGAL </div>
+                <i class="fas fs-4 fa-map-marker-alt text-danger"></i>&nbsp; <b>{{$route->cityDepartureRef->name}}</b>
+                &nbsp;&nbsp;<i class="fas fs-5 fa-chevron-right text-black-50" style="font-size: .7em;"></i> &nbsp; {{$route->cityArrivalRef->name}} </div>
         </div>
         <div class="col-12">
             <div class="mt-3">
-            <i class="far fa-calendar-alt text-danger"></i>&nbsp; 04 Oktober 2021 </div>
+            @php
+                $dateFormat = \Carbon\Carbon::parse($date);
+            @endphp
+            <i class="far fa-calendar-alt text-danger"></i>&nbsp; {{$dateFormat->isoFormat('DD MMMM YYYY')}} </div>
         </div>
     </div>
 
@@ -26,10 +29,13 @@
             <div class="row">
                 <div class="col-md-6">
                     <div class="small"> <b>Dari:</b></div>
-                    <select class="rounded-end wide" style="width: 100%">
+                    <select class="rounded-end wide" style="width: 100%" id="departure-select">
                         <option data-display="Cari Keberangkatan">Cari Keberangkatan</option>
-                        <option value="1">Jakarta</option>
-                        <option value="2">Tegal</option>
+                        @foreach ($cities as $city)
+                            <option value="{{$city->id}}" @if($city->id == $route->departure) selected @endif>
+                                {{$city->name}}
+                            </option>
+                        @endforeach
                     </select>
                 </div>
                 <div class="col-md-6">
@@ -37,9 +43,7 @@
                         <b>Ke:</b>
                     </div>
                     <select class="rounded-end wide" style="width: 100%">
-                        <option data-display="Cari Tujuan">Cari Tujuan</option>
-                        <option value="1">Jakarta</option>
-                        <option value="2">Tegal</option>
+                        <option value="{{$route->arrival}}"  data-display="{{$route->cityArrivalRef->name}}">{{$route->cityArrivalRef->name}}</option>
                     </select>
                 </div>
             </div>
@@ -72,7 +76,7 @@
                         <span class="input-group-text border-1 rounded-start bg-white">
                             &nbsp;<i class="far fa-calendar-alt small text-black-50"></i>&nbsp;
                         </span>
-                        <input name="tanggalpulang" id="tanggalpulang" type="text" class="form-control rounded-end" aria-label="tanggalpulang" aria-describedby="tanggalpulang" readonly="">
+                        <input name="tanggalpulang" value="{{$date}}" id="tanggalpulang" type="text" class="form-control rounded-end" aria-label="tanggalpulang" aria-describedby="tanggalpulang" readonly="">
                     </div>
                 </div>
                 <div class="col">
@@ -88,129 +92,60 @@
     </div>
 
     <div class="row mt-5">
-        <div class="col-lg-6 col-md-6 col-12 mb-3">
-            <div class="card border-0 shadow-1 border-radius-20" >
-                <div class="card-body px-5">
-                    <div class="row mb-3">
-                        <div class="col-12">
-                            <h5 class="font-weight-bold text-secondary">4 Saudara Trans</h5>
+        @foreach ($schedules as $schedule)
+            <div class="col-lg-6 col-md-6 col-12 mb-3">
+                <div class="card border-0 shadow-1 border-radius-20" >
+                    <div class="card-body px-5">
+                        <div class="row mb-3">
+                            <div class="col-12">
+                                <h5 class="font-weight-bold text-secondary">4 Saudara Trans</h5>
+                            </div>
+                            <div class="mb-2">
+                                <p class="text-danger small pl-3">Rp. {{number_format($schedule->price,2,',','.')}}/pax</p>
+                            </div>
                         </div>
-                        <div class="mb-2">
-                            <p class="text-danger small pl-3">Rp.200.000/pax</p>
+                        <div class="row">
+                            <div class="col-lg-3 col-4">
+                                <h4 class="text-secondary">{{substr($schedule->departure_time,0,-3)}}</h4>
+                                <p class="text-danger">{{$schedule->routeRef->cityDepartureRef->name}}</p>
+                            </div>
+                            <div class="col-lg-3 col-4">
+                                <p class="text-danger"><i class="fas fa-arrow-right"></i></p>
+                            </div>
+                            <div class="col-lg-3 col-4">
+                                <h4 class="text-secondary">{{substr($schedule->arrival_time,0,-3)}}</h4>
+                                <p class="text-danger">{{$schedule->routeRef->cityArrivalRef->name}}</p>
+                            </div>
+                            <div class="col-lg-3 border-left d-none d-none d-sm-block">
+                                <h4 class="text-secondary">Sisa Kursi</h4>
+                                <p class="text-danger">{{$schedule->remaining_seats}}</p>
+                            </div>
+                            {{-- <div class="col-lg-4 mt-2 d-block d-sm-none">
+                                <h4 class="text-secondary">Sisa Kursi</h4>
+                                <p class="text-danger">4</p>
+                            </div> --}}
                         </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-lg-3 col-4">
-                            <h4 class="text-secondary">06:00</h4>
-                            <p class="text-danger">JAKARTA</p>
-                        </div>
-                        <div class="col-lg-3 col-4">
-                            <p class="text-danger"><i class="fas fa-arrow-right"></i></p>
-                        </div>
-                        <div class="col-lg-3 col-4">
-                            <h4 class="text-secondary">14:00</h4>
-                            <p class="text-danger">TEGAL</p>
-                        </div>
-                        <div class="col-lg-3 border-left d-none d-none d-sm-block">
-                            <h4 class="text-secondary">Sisa Kursi</h4>
-                            <p class="text-danger">4</p>
-                        </div>
-                        {{-- <div class="col-lg-4 mt-2 d-block d-sm-none">
-                            <h4 class="text-secondary">Sisa Kursi</h4>
-                            <p class="text-danger">4</p>
-                        </div> --}}
-                    </div>
-                    <div class="row mt-4">
-                        <div class="col-12">
-                            <form action="{{route('landing.shuttle.reservation.create')}}" method="post">
-                                @csrf
-                                <button type="submit" class="btn btn-danger btn-block">Pesan Sekarang</button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-lg-6 col-md-6 col-12 mb-3">
-            <div class="card border-0 shadow-1 border-radius-20" >
-                <div class="card-body px-5">
-                    <div class="row mb-3">
-                        <div class="col-12">
-                            <h5 class="font-weight-bold text-secondary">4 Saudara Trans</h5>
-                        </div>
-                        <div class="mb-2">
-                            <p class="text-danger small pl-3">Rp.200.000/pax</p>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-lg-3 col-4">
-                            <h4 class="text-secondary">13:00</h4>
-                            <p class="text-danger">JAKARTA</p>
-                        </div>
-                        <div class="col-lg-3 col-4">
-                            <p class="text-danger"><i class="fas fa-arrow-right"></i></p>
-                        </div>
-                        <div class="col-lg-3 col-4">
-                            <h4 class="text-secondary">20:00</h4>
-                            <p class="text-danger">TEGAL</p>
-                        </div>
-                        <div class="col-lg-3 border-left d-none d-none d-sm-block">
-                            <h4 class="text-secondary">Sisa Kursi</h4>
-                            <p class="text-danger">2</p>
-                        </div>
-                        {{-- <div class="col-lg-4 mt-2 d-block d-sm-none">
-                            <h4 class="text-secondary">Sisa Kursi</h4>
-                            <p class="text-danger">2</p>
-                        </div> --}}
-                    </div>
-                    <div class="row mt-4">
-                        <div class="col-12">
-                            <button type="submit" class="btn btn-secondary btn-block">Pesan Sekarang</button>
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                @php
+                                    $code = Str::random(20);
+                                @endphp
+                                <form action="{{route('landing.shuttle.reservation.index')}}" method="get">
+                                    @if ($schedule->remaining_seats != 0)
+                                        <input type="hidden" name="scheduleId" value="{{$schedule->id}}">
+                                        <input type="hidden" name="code" value="{{$code}}">
+                                        <button type="submit" class="btn btn-danger btn-block">Pesan Sekarang</button>
+                                    @else
+                                        <button type="button" disabled class="btn btn-secondary btn-block">Pesan Sekarang</button>
+                                    @endif
+                                    
+                                </form>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div> 
-        <div class="col-lg-6 col-md-6 col-12 mb-3">
-            <div class="card border-0 shadow-1 border-radius-20" >
-                <div class="card-body px-5">
-                    <div class="row mb-3">
-                        <div class="col-12">
-                            <h5 class="font-weight-bold text-secondary">4 Saudara Trans</h5>
-                        </div>
-                        <div class="mb-2">
-                            <p class="text-danger small pl-3">Rp.100.000/pax</p>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-lg-3 col-4">
-                            <h4 class="text-secondary">09:00</h4>
-                            <p class="text-danger">JAKARTA</p>
-                        </div>
-                        <div class="col-lg-3 col-4">
-                            <p class="text-danger"><i class="fas fa-arrow-right"></i></p>
-                        </div>
-                        <div class="col-lg-3 col-4">
-                            <h4 class="text-secondary">16:00</h4>
-                            <p class="text-danger">TEGAL</p>
-                        </div>
-                        <div class="col-lg-3 border-left d-none d-none d-sm-block">
-                            <h4 class="text-secondary">Sisa Kursi</h4>
-                            <p class="text-danger">4</p>
-                        </div>
-                        {{-- <div class="col-lg-4 mt-2 d-block d-sm-none">
-                            <h4 class="text-secondary">Sisa Kursi</h4>
-                            <p class="text-danger">4</p>
-                        </div> --}}
-                    </div>
-                    <div class="row mt-4">
-                        <div class="col-12">
-                            <button type="submit" class="btn btn-danger btn-block">Pesan Sekarang</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>  
+        @endforeach
     </div>
 </div>
     
@@ -222,18 +157,18 @@
 
             AOS.init();
             
-            // $('#date-travel').daterangepicker({
-            //     locale: {
-            //     format: 'YYYY-MM-DD'
-            //     },    
-            //     showDropdowns: true,
-            //     autoApply: true,
-            //     singleDatePicker: true,
-            //     startDate: '2021-10-02',
-            //     minDate: '2021-10-02',
-            //     maxDate: moment().add(30, 'days')
+            $('#date-travel').daterangepicker({
+                locale: {
+                format: 'YYYY-MM-DD'
+                },    
+                showDropdowns: true,
+                autoApply: true,
+                singleDatePicker: true,
+                startDate: "{{$date}}",
+                minDate: new Date(),
+                maxDate: moment().add(30, 'days')
 
-            // });
+            });
         });
 
         

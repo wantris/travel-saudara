@@ -12,6 +12,7 @@
     @include('_partials.css_asset')
 
     @stack('custom-style')
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <!-- <link rel="stylesheet" href="css/responsive.css"> -->
 </head>

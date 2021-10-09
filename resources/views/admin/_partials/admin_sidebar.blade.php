@@ -63,7 +63,7 @@
             </a>
           </li>
           <li class="nav-item">
-            <a href="pages/widgets.html" class="nav-link">
+            <a href="{{route('admin.schedule.index')}}" class="nav-link">
                 <i class="nav-icon fas fa-calendar-alt"></i>
               <p>
                 Jadwal

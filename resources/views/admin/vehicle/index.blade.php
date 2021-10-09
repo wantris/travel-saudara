@@ -43,7 +43,7 @@
                                     </td>
                                     <td>
                                         <a href="{{route('admin.vehicle.edit', $vehicle->id)}}" class="btn btn-primary d-inline mr-2 mb-2">Edit</a>
-                                        <a href="#" onclick="deleteRoute({{$vehicle->id}})" class="btn btn-danger d-inline mr-2 mb-2">Hapus</a>
+                                        <a href="#" onclick="deleteVehicle({{$vehicle->id}})" class="btn btn-danger d-inline mr-2 mb-2">Hapus</a>
                                         <a href="{{route('admin.vehicle.detail', $vehicle->id)}}" class="btn btn-success d-inline mb-2">Detail</a>
                                     </td>
                                 </tr>
@@ -62,11 +62,11 @@
         $('#example').DataTable();
     } );
 
-    const deleteRoute = (id) => {
+    const deleteVehicle = (id) => {
         event.preventDefault();
-        let url = "/admin/route/delete";
+        let url = "/admin/vehicle/delete";
         Notiflix.Confirm.Show( 
-            'Data Rute',
+            'Data Kendaraan',
             'Apakah anda yakin ingin menghapus?',
             'Yes',
             'No',

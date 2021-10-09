@@ -12,8 +12,11 @@
 
 @section('content')
     <div class="row">
-        <div class="col-12 mb-3">
+        <div class="col-lg-6 mb-3">
             <a href="{{route('admin.vehicle.addSeat', $vehicle->id)}}" class="btn btn-success"><i class="fas fa-plus mr-2"></i>Tambah Data Kursi Kendaraan</a>
+        </div>
+        <div class="col-lg-6 mb-3 text-right">
+            <a href="{{route('admin.vehicle.index')}}" class="btn btn-primary"><i class="fad fa-backward mr-2"></i>Kembali</a>
         </div>
         <div class="col-12">
             <div class="card shadow">
@@ -40,9 +43,9 @@
                                     <td>
                                         <a href="#" onclick="deleteSeat({{$seat->id}})" class="btn btn-danger d-inline mr-2 mb-2">Hapus</a>
                                         @if ($seat->status)
-                                            <a href="#" class="btn btn-secondary d-inline mr-2 mb-2">Buat Tidak Aktif</a>
+                                            <a href="#" onclick="updateStatus({{$seat->id}}, 0)" class="btn btn-secondary d-inline mr-2 mb-2">Buat Tidak Aktif</a>
                                         @else
-                                            <a href="#" class="btn btn-success d-inline mr-2 mb-2">Buat Aktif</a>
+                                            <a href="#" onclick="updateStatus({{$seat->id}}, 1)" class="btn btn-success d-inline mr-2 mb-2">Buat Aktif</a>
                                         @endif
                                     </td>
                                 </tr>
@@ -60,6 +63,46 @@
     $(document).ready(function() {
         $('#example').DataTable();
     } );
+
+    const updateStatus = (id, status) => {
+        event.preventDefault();
+        let url = "/admin/vehicle/seat/status";
+        $msg = "";
+        if(status){
+            $msg = "Apakah anda yakin ingin kursi aktif?";
+        }else{
+            $msg = "Apakah anda yakin ingin kursi tidak aktif?";
+        }
+        Notiflix.Confirm.Show( 
+            'Data Kursi',
+            $msg,
+            'Yes',
+            'No',
+             function(){ 
+                $.ajax(
+                    {
+                        url: url,
+                        type: 'post', 
+                        dataType: "JSON",
+                        data: {
+                            "id": id ,
+                            "status":status
+                        },
+                        success: function (response){
+                            if(response.status == 1){
+                                Notiflix.Notify.Success(response.message);
+                                location.reload();
+                            }
+                        },
+                        error: function(xhr) {
+                            console.log(xhr);
+                            Notiflix.Notify.Failure('Ooopss');
+                        }
+                });
+            }, function(){
+                 // No button callback alert('If you say so...'); 
+            } ); 
+    }
 
     const deleteSeat = (id) => {
         event.preventDefault();

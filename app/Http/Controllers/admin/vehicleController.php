@@ -64,21 +64,59 @@ class vehicleController extends Controller
         }
     }
 
-    public function deleteSeat(Request $request)
+    public function edit($id)
+    {
+        $vehicle = Vehicle::find($id);
+        if ($vehicle) {
+            return view('admin.vehicle.edit', compact('vehicle'));
+        }
+
+        return redirect()->back()->with('failed', 'Data kendaraan tidak ada');
+    }
+
+    public function update(Request $request)
+    {
+        $validatedData = $request->validate([
+            'name' => 'required',
+        ]);
+
+        try {
+            $vehicle = Vehicle::find($request->id);
+            if ($vehicle) {
+                $vehicle->vehicle_name = $request->name;
+                $vehicle->total_seats = $request->total_seat;
+                if ($request->is_active) {
+                    $vehicle->is_active = 1;
+                } else {
+                    $vehicle->is_active = 0;
+                }
+                $vehicle->save();
+
+                return redirect()->route('admin.vehicle.index')->with('success', 'Update data kendaraan berhasil');
+            }
+
+
+            return redirect()->back()->with('failed', 'Data kendaraan tidak ada');
+        } catch (\Throwable $th) {
+            return redirect()->back()->with('failed', 'Update data kendaraan gagal');
+        }
+    }
+
+    public function delete(Request $request)
     {
 
         try {
 
-            VehicleDetail::where('id', $request->id)->delete();
+            Vehicle::where('id', $request->id)->delete();
 
             return response()->json([
                 "status" => 1,
-                "message" => 'Data kursi berhasil dihapus',
+                "message" => 'Data kendaraan berhasil dihapus',
             ]);
         } catch (\Throwable $err) {
             return response()->json([
                 "status" => 0,
-                "message" => 'Data kursi gagal dihapus',
+                "message" => 'Data kendaraan gagal dihapus',
             ]);
         }
     }
@@ -124,6 +162,46 @@ class vehicleController extends Controller
 
                 return redirect()->back()->with('success', 'Tambah data kursi berhasil');
             }
+        }
+    }
+
+    public function updateSeatStatus(Request $request)
+    {
+        $seat = VehicleDetail::find($request->id);
+        if ($seat) {
+            try {
+                $seat->status = $request->status;
+                $seat->save();
+
+                return response()->json([
+                    "status" => 1,
+                    "message" => 'Status berhasil di update',
+                ]);
+            } catch (\Throwable $th) {
+                return response()->json([
+                    "status" => 0,
+                    "message" => 'Status gagal di update',
+                ]);
+            }
+        }
+    }
+
+    public function deleteSeat(Request $request)
+    {
+
+        try {
+
+            VehicleDetail::where('id', $request->id)->delete();
+
+            return response()->json([
+                "status" => 1,
+                "message" => 'Data kursi berhasil dihapus',
+            ]);
+        } catch (\Throwable $err) {
+            return response()->json([
+                "status" => 0,
+                "message" => 'Data kursi gagal dihapus',
+            ]);
         }
     }
 }

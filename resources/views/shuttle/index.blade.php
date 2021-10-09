@@ -71,51 +71,50 @@
                             </div>
                         </div>
                     </form>
-                    <div class="col-12 font-weight-bold pb-2 mt-3">
-                        Reservasi Online
-                    </div>
-                    <div class="px-3 mb-3" style="margin-bottom: 60px !important">
-                        <select class="rounded-end wide" style="width: 100%">
-                            <option data-display="Cari Keberangkatan">Cari Keberangkatan</option>
-                            <option value="1">Jakarta</option>
-                            <option value="2">Tegal</option>
-                        </select>
-                    </div>
-                    <div class="px-3 mt-3">
-                        <select class="rounded-end wide" style="width: 100%">
-                            <option data-display="Cari Tujuan">Cari Tujuan</option>
-                            <option value="1">Jakarta</option>
-                            <option value="2">Tegal</option>
-                        </select>
-                    </div>
-                    
-                </div>
-                <div class="card-body p-0 pl-4" style="margin-top: -5%">
-                    <div class="px-3 mt-3 mb-2 font-weight-bold">
-                        Tanggal Pergi
-                    </div>
-                    <div class="col-12 pb-2" style="padding-right:8%">
-                        <div class="input-group">
-                            <span class="input-group-text border-1 rounded-start bg-white">
-                                &nbsp;<i class="fas fa-calendar-alt text-danger"></i>&nbsp;
-                            </span>
-                            <input type="text" id="date-travel" class="form-control rounded-end" name="tanggal" id="ticketing-picker" readonly="">
+                    <form action="{{route('landing.shuttle.search')}}" method="GET">
+                       
+                        <div class="col-12 font-weight-bold pb-2 mt-3">
+                            Reservasi Online
                         </div>
-                    </div>
-                    <div class="col-12 mt-3 d-flex">
-                        <div class="switch-wrap">
-                            <div class="primary-switch border">
-                                <input type="checkbox" id="primary-switch" checked>
-                                <label for="primary-switch"></label>
+                        <div class="px-3 mb-3" style="margin-bottom: 60px !important">
+                            <select class="rounded-end wide" id="departure-select" style="width: 100%">
+                                <option data-display="Cari Keberangkatan" value="none">Cari Keberangkatan</option>
+                                @foreach ($cities as $city)
+                                    <option value="{{$city->id}}">{{$city->name}}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="px-3 mt-3">
+                            <select class="rounded-end wide" name="route" id="arrival-select" style="width: 100%">
+                                <option data-display="Cari Tujuan">Cari Tujuan</option>
+                            </select>
+                        </div>
+                </div>
+                    <div class="card-body p-0 pl-4" style="margin-top: -5%">
+                        <div class="px-3 mt-3 mb-2 font-weight-bold">
+                            Tanggal Pergi
+                        </div>
+                        <div class="col-12 pb-2" style="padding-right:8%">
+                            <div class="input-group">
+                                <span class="input-group-text border-1 rounded-start bg-white">
+                                    &nbsp;<i class="fas fa-calendar-alt text-danger"></i>&nbsp;
+                                </span>
+                                <input type="text" id="date-travel" name="date" class="form-control rounded-end" name="tanggal" id="ticketing-picker" readonly="">
                             </div>
                         </div>
-                        <p class="ml-3">Pulang Pergi?</p>
-                    </div>
-                    <div class="col-12 mt-3 mb-4">
-                        <a href="{{route('landing.shuttle.search')}}" class="btn btn-danger btn-block">
-                            Cari Jadwal
-                        </a>
-                    </div>
+                        <div class="col-12 mt-3 d-flex">
+                            <div class="switch-wrap">
+                                <div class="primary-switch border">
+                                    <input type="checkbox" name="option" id="primary-switch" checked>
+                                    <label for="primary-switch"></label>
+                                </div>
+                            </div>
+                            <p class="ml-3">Pulang Pergi?</p>
+                        </div>
+                        <div class="col-12 mt-3 mb-4">
+                            <input type="submit" value="Cari Jadwal" class="btn btn-danger btn-block">
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
@@ -159,8 +158,9 @@
     <script>
         $(document).ready(function() {
 
+            $('#arrival-select').prop('disabled', true).niceSelect('update');
+
             var myBG = $(".bradcam_area").data('bg');
-            console.log(myBG);      
             $(".bradcam_area").css('background', 'url('+myBG+')');
             
             $('#date-travel').daterangepicker({
@@ -170,12 +170,63 @@
                 showDropdowns: true,
                 autoApply: true,
                 singleDatePicker: true,
-                startDate: '2021-10-02',
-                minDate: '2021-10-02',
+                startDate: new Date(),
+                minDate: new Date(),
                 maxDate: moment().add(30, 'days')
 
             });
         });
+
+        $('#departure-select').on('change', function(){
+            let value = $(this).val();
+            if(value != "none"){
+                getRouteCity(value);
+            }{
+                $('#arrival-select').prop('disabled', true).niceSelect('update');
+            }
+           
+        });
+
+        const getRouteCity = (id) =>{
+            const url_route = "/shuttle/getroute/";
+            $.ajax(
+                {
+                    url: url_route,
+                    type: 'post', 
+                    data:{
+                        'id':id
+                    },
+                    success: function (response){
+                        if(response.code == 200){
+                            renderArrival(response.datas);
+                        }
+                    },
+                    error: function(xhr) {
+                        console.log(xhr);
+                    }
+                }
+            );
+        }
+
+        const renderArrival = (items) => {
+            console.log(items);
+            $('#arrival-select').prop('disabled', false).niceSelect('update');
+
+            $('#arrival-select').empty();
+
+            $('#arrival-select').append($('<option>', { 
+                    text : "Cari Tujuan"
+            }));
+
+            $.each(items, function (i, item) {
+                $('#arrival-select').append($('<option>', { 
+                    value: item.id,
+                    text : item.city_arrival_ref.name
+                }));
+            });
+
+            $('#arrival-select').niceSelect('update');
+        }
 
         
     </script>
