@@ -18,6 +18,7 @@ class CreateBankPaymentsTable extends Migration
             $table->char('bank_name', 100);
             $table->char('behalf_of', 100);
             $table->char('account_number', 30);
+            $table->string('photo');
             $table->tinyInteger('status');
             $table->timestamps();
         });

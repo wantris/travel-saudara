@@ -24,9 +24,11 @@ Route::group(['prefix' => 'shuttle'], function () {
     Route::get('/reservation', 'landing\travelController@reservation')->name('landing.shuttle.reservation.index');
     Route::get('/reservation/seatlist', 'landing\travelController@seatList')->name('landing.shuttle.reservation.seatList');
     Route::post('/reservation', 'landing\travelController@saveReservation')->name('landing.shuttle.reservation.save');
+    Route::get('/reservation/updatestatus/{code}', 'landing\travelController@updateStatusReservation')->name('landing.shuttle.reservation.updatestatus');
 
     Route::get('/payment/{code}', 'landing\travelController@payment')->name('landing.shuttle.reservation.payment');
-    Route::get('/payment/single/{code}', 'landing\travelController@paymentSingle')->name('landing.shuttle.reservation.paymentsingle');
+    Route::post('/payment/{code}', 'landing\travelController@savePayment')->name('landing.shuttle.reservation.payment.save');
+    // Route::get('/payment/single/{code}', 'landing\travelController@paymentSingle')->name('landing.shuttle.reservation.paymentsingle');
     Route::get('/payment/upload/{code}', 'landing\travelController@uploadTransfer')->name('landing.shuttle.reservation.uploadTransfer');
 });
 

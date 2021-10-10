@@ -22,6 +22,7 @@ class CreateReservationsTable extends Migration
             $table->char('wa_number', 15);
             $table->integer('total_seats');
             $table->integer('subtotal');
+            $table->tinyInteger('status')->default(1);
             $table->timestamps();
 
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');

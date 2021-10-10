@@ -169,8 +169,9 @@
                                 <span class="input-group-text border-1 border-danger bg-danger rounded-start ">
                                     &nbsp;<i class="fas fa-swatchbook text-white"></i>&nbsp;
                                 </span>
-                                <input type="text" name="total_seat" class="form-control border-danger" id="total-seats-text" placeholder="Total Kursi" style="height: 40px !important;">
+                                <input type="text" disabled class="form-control border-danger"  id="total-seats-text"  placeholder="Total Kursi" style="height: 40px !important;">
                             </div>
+                            <input type="hidden" name="total_seat" id="total-seats-inp">
                             @if ($errors->has('toal_seat'))
                                 <span class="text-danger">{{ $errors->first('toal_seat') }}</span>
                             @endif
@@ -180,7 +181,7 @@
                                 <span class="input-group-text border-1 border-danger bg-danger rounded-start ">
                                     &nbsp;<i class="fas fa-money-bill-wave text-white"></i>&nbsp;
                                 </span>
-                                <input type="text" class="form-control border-danger" id="price-text" placeholder="Total Harga" style="height: 40px !important;">
+                                <input type="text" disabled class="form-control border-danger" id="price-text" placeholder="Total Harga" style="height: 40px !important;">
                                 <input type="hidden" name="price" class="form-control border-danger" id="price-inp" placeholder="Total Harga" style="height: 40px !important;">
                             </div>
                         </div>
@@ -317,6 +318,7 @@
             total_price = total_seats * parseInt(price);
 
             $('#total-seats-text').val(total_seats);
+            $('#total-seats-inp').val(total_seats);
             $('#price-text').val("Rp. "+total_price);
             $('#price-inp').val(total_price);
         }
@@ -327,6 +329,7 @@
             total_price =  total_price - parseInt(price);
 
             $('#total-seats-text').val(total_seats);
+            $('#total-seats-inp').val(total_seats);
             $('#price-text').val("Rp. "+total_price);
             $('#price-inp').val(total_price);
         }

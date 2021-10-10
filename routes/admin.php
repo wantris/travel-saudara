@@ -42,3 +42,12 @@ Route::group(['prefix' => 'schedule', 'middleware' => ['web']], function () {
     Route::patch('/edit', 'admin\scheduleController@update')->name('admin.schedule.update');
     Route::delete('/delete', 'admin\scheduleController@delete')->name('admin.schedule.delete');
 });
+
+Route::group(['prefix' => 'bankpayment', 'middleware' => ['web']], function () {
+    Route::get('/', 'admin\bankPaymentController@index')->name('admin.bankPayment.index');
+    Route::get('/create', 'admin\bankPaymentController@create')->name('admin.bankPayment.create');
+    Route::post('/create', 'admin\bankPaymentController@save')->name('admin.bankPayment.save');
+    Route::get('/edit/{id}', 'admin\bankPaymentController@edit')->name('admin.bankPayment.edit');
+    Route::patch('/edit', 'admin\bankPaymentController@update')->name('admin.bankPayment.update');
+    Route::delete('/delete', 'admin\bankPaymentController@delete')->name('admin.bankPayment.delete');
+});

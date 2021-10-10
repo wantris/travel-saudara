@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\landing;
 
+use App\BankPayment;
 use App\Http\Controllers\Controller;
 use App\models\City;
 use App\models\Route;
@@ -9,6 +10,7 @@ use App\models\Vehicle;
 use App\Reservation;
 use App\Schedule;
 use App\Ticket;
+use App\Transaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
@@ -178,9 +180,51 @@ class travelController extends Controller
 
     public function payment($code)
     {
-        $order = Reservation::with('scheduleRef', 'ticketRef')->find($code);
+        $banks = BankPayment::where('status', '1')->get();
+        $order = Reservation::with(
+            'scheduleRef',
+            'ticketRef',
+            'scheduleRef.routeRef',
+            'scheduleRef.vehicleRef',
+            'scheduleRef.routeRef.cityDepartureRef',
+            'scheduleRef.routeRef.cityArrivalRef'
+        )->find($code);
 
-        return view('shuttle.payment', compact('code', 'order'));
+        return view('shuttle.payment', compact('code', 'order', 'banks'));
+    }
+
+    public function savePayment(Request $request, $code)
+    {
+        if (!$request->bank_payment || $request->bank_payment == null) {
+            return redirect()->back()->with('failed', 'Pilih bank terlebih dahulu');
+        }
+
+        try {
+            $order = Reservation::find($code);
+            if ($order) {
+                $check_ts = Transaction::latest()->first();
+                if ($check_ts) {
+                    $ts_parts =  preg_split("/[-]/", $check_ts->bill_code);
+                    (string)$new_number = sprintf("%07d", (int)$ts_parts[1] + 1);
+                    $ts_code = "TAG-" . $new_number;
+                } else {
+                    $ts_code = "TAG-0000001";
+                }
+                $ts = new Transaction();
+                $ts->bill_code = $ts_code;
+                $ts->reservation_code = $code;
+                $ts->bank_payment_id = $request->bank_payment;
+                $ts->total = $order->subtotal;
+                $ts->status = 0;
+                $ts->save();
+
+                return redirect()->route('landing.shuttle.reservation.uploadTransfer', $code);
+            }
+
+            return redirect()->route('landing.shuttle.reservation.uploadTransfer')->with('failed', 'Data reservasi tidak tersedia');
+        } catch (\Throwable $th) {
+            dd($th);
+        }
     }
 
     public function paymentSingle($code)
@@ -207,6 +251,31 @@ class travelController extends Controller
                 'code' => 500,
                 'datas' => null,
                 'message' => 'Get routes failed',
+            ]);
+        }
+    }
+
+    public function updateStatusReservation($code)
+    {
+        try {
+            $order = Reservation::find($code);
+            if ($order) {
+                $order->status = 0;
+                $order->save();
+                return response()->json([
+                    'code' => 200,
+                    'status' => 1
+                ]);
+            }
+
+            return response()->json([
+                'code' => 404,
+                'status' => 0
+            ]);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'code' => 500,
+                'status' => 0
             ]);
         }
     }

@@ -14,7 +14,7 @@
                     Reservasi Akan Dibatalkan Otomatis Dalam Waktu
                 </div>
                 <div class="display-6 font-weight-bold">
-                    <span id="payment_time">14:36</span>
+                    <span id="payment_time"></span>
                 </div>
             </div>
         </div>
@@ -27,19 +27,19 @@
                     <div class="col-12">
                         <div class="form-group">
                             <label for="">Nama Pemesan <span class="text-danger">*</span></label>
-                            <input type="text" name="name" class="form-control border-secondary" disabled placeholder="Nama Pemesan" value="{{$code->fullname}}" style="height: 40px !important;">
+                            <input type="text" name="name" class="form-control border-secondary" disabled placeholder="Nama Pemesan" value="{{$order->fullname}}" style="height: 40px !important;">
                         </div>
                     </div>
                     <div class="col-12">
                         <div class="form-group">
                             <label for="">Email <span class="text-danger">*</span></label>
-                            <input type="text" name="name" class="form-control border-secondary" disabled placeholder="Email" value="gustiwacik@gmail.com" style="height: 40px !important;">
+                            <input type="text" name="name" class="form-control border-secondary" value="{{$order->email}}" disabled placeholder="Email" value="gustiwacik@gmail.com" style="height: 40px !important;">
                         </div>
                     </div>
                     <div class="col-12">
                         <div class="form-group">
                             <label for="">Nomor Whatsapp <span class="text-danger">*</span></label>
-                            <input type="text" name="name" class="form-control border-secondary" disabled placeholder="Nomor Whatsapp" value="081295491852" style="height: 40px !important;">
+                            <input type="text" name="name" class="form-control border-secondary" value="{{$order->wa_number}}" disabled placeholder="Nomor Whatsapp" value="081295491852" style="height: 40px !important;">
                         </div>
                     </div>
                 </div>
@@ -53,44 +53,93 @@
                     </div>
                     <div class="col-12 d-flex mb-3 border-bottom">
                         <i class="fas fa-stream text-danger fa-1x mr-3 mt-1"></i>
-                        <p class="fw-bold text-secondary">TORDER-2319893-264</p>
+                        <p class="fw-bold text-secondary">{{$order->code}}</p>
                     </div>
                     <div class="col-12 d-flex mb-3 border-bottom">
                         <i class="fas fa-map-marker-alt text-danger fa-1x mr-3 mt-1"></i>
-                        <p class="fw-bold text-secondary mr-3">JAKARTA</p>
+                        <p class="fw-bold text-secondary mr-3">{{$order->scheduleRef->routeRef->cityDepartureRef->name}}</p>
                         <i class="fas fa-arrow-right text-danger fa-sm mr-3 mt-2"></i>
-                        <p class="fw-bold text-secondary mr-3">TEGAL</p>
+                        <p class="fw-bold text-secondary mr-3">{{$order->scheduleRef->routeRef->cityArrivalRef->name}}</p>
                     </div>
                     <div class="col-12 d-flex mb-3 border-bottom">
                         <i class="fas fa-calendar-week text-danger fa-1x mr-3 mt-1"></i>
-                        <p class="fw-bold text-secondary">24 Oktober 2021</p>
+                        @php
+                            $date = \Carbon\Carbon::parse($order->scheduleRef->date);
+                        @endphp
+                        <p class="fw-bold text-secondary">{{$date->isoFormat('DD MMMM YYYY')}}</p>
                     </div>
-                    <div class="col-12 d-flex mb-3 border-bottom">
-                        <i class="fas fa-loveseat text-danger fa-1x mr-3 mt-1"></i>
-                        <p class="fw-bold text-secondary">Kursi No.8</p>
-                    </div>
+                    @foreach ($order->ticketRef as $ticket)
+                        <div class="col-12 d-flex mb-3 border-bottom">
+                            <i class="fas fa-loveseat text-danger fa-1x mr-3 mt-1"></i>
+                            <p class="fw-bold text-secondary">Kursi No.{{$ticket->seat_number}} ({{$ticket->ticket_code}})</p>
+                        </div>
+                    @endforeach
                     <div class="col-12 h6 fw-bolder text-danger mt-2 mb-2" style="font-size: 1.2em;">
                         Total Tagihan
                     </div>
                     <div class="col-12 d-flex mb-3">
                         <i class="fas fa-money-bill-wave text-danger fa-1x mr-3 mt-1"></i>
-                        <p class="fw-bold text-secondary">Rp. 200.000,00</p>
+                        <p class="fw-bold text-secondary">Rp. {{number_format($order->subtotal,2,',','.')}}</p>
                     </div>
                     <div class="col-12 h6 fw-bolder text-danger mt-2 mb-2" style="font-size: 1.2em;">
                         Pilih Bank Transfer
                     </div>
                     <div class="col-12">
-                        <div class="col-md-3 col-lg-3 col-6 btn-group shadow-0">
-                            <input type="radio" class="btn-check" name="options" id="option4" value="echannel" autocomplete="off">
-                            <label class="btn btn-light p-1" for="option4">
-                                <img class="img-thumbnail" src="https://naikbhinneka.com/uploads/wisata/payment-logo/Untitled-1-04.png" alt="">
-                            </label>
+                        @foreach ($banks as $bank)
+                            <div class="col-md-3 col-lg-3 col-6 btn-group shadow-0" id="col-logo-{{$bank->id}}">
+                                <a href="#" onclick="chooseBank({{$bank->id}})">
+                                    <label class="btn btn-light p-1" for="option4">
+                                        <img class="img-thumbnail" src="{{url('assets/bank-logo/'. $bank->photo)}}" alt="">
+                                    </label>
+                                </a>
+                            </div> 
+                        @endforeach
+                    </div>
+                </div>
+                @foreach ($banks as $bank)
+                    <div class="row px-3 mt-2 d-none bank-row" id="bank_row_{{$bank->id}}">
+                        <div class="col-12">
+                            <div class="row">
+                                <div class="col-12 mb-2">
+                                    Nomor Rekening Transfer {{$bank->bank_name}} (an. 4 Saudara Trans):
+                                </div>
+                            </div>
+                            <div class="row gx-2">
+                                <div class="col d-grid align-items-stretch">
+                                    <div class="d-flex align-items-center justify-content-center text-black-50 py-2 font-weight-bold rounded" style="background:#e7e7e7">
+                                    {{$bank->account_number}}
+                                    </div>
+                                </div>
+                                <div class="col-auto">
+                                    <a href="#!" class="btn btn-sm btn-outline-danger link-danger font-weight-bold rounded py-2" style="border:1px solid" onclick="copyPaste('5140539009')">
+                                    Salin
+                                    </a>
+                                </div>
+                            </div>
                         </div>
-                        <div class="col-md-3 col-lg-3 col-6 btn-group shadow-0">
-                            <input type="radio" class="btn-check" name="options" id="option4" value="echannel" autocomplete="off">
-                            <label class="btn btn-light p-1" for="option4">
-                                <img class="img-thumbnail" src="https://naikbhinneka.com/uploads/wisata/payment-logo/Untitled-1-06.png" alt="">
-                            </label>
+                        <div class="col-12">
+                            <hr>
+                        </div>
+                    </div>
+                @endforeach
+                <div class="row px-3 mb-3 d-none" id="nominal-transfer">
+                    <div class="col-12">
+                        <div class="row">
+                            <div class="col-12 mb-2">
+                                Nominal Transfer:
+                            </div>
+                        </div>
+                        <div class="row gx-2">
+                            <div class="col d-grid align-items-stretch">
+                                <div class="d-flex align-items-center justify-content-center fs-5 font-weight-bold py-2 rounded" style="background:#ffe9e9">
+                                    Rp{{number_format($order->subtotal,0,',','.')}}
+                                </div>
+                            </div>
+                            <div class="col-auto">
+                                <a href="#!" class="btn btn-sm btn-outline-danger py-2 link-danger font-weight-bold rounded" style="border:1px solid" onclick="copyPaste('110543')">
+                                Salin
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -99,7 +148,15 @@
                         <button type="submit" name="submit_batal" value="submit_batal" class="btn btn-danger btn-block ripple-surface" onclick="return confirm('Anda yakin membatalkan reservasi TAG-4444-264 ini?');">Batalkan Reservasi</button>
                     </div>
                     <div class="col-md-6 text-md-end text-center py-md-5 py-1">
-                        <a href="{{route('landing.shuttle.reservation.paymentsingle', $code)}}" id="pay-button" class="btn btn-primary btn-block">Lanjutkan Pembayaran</a>
+                        <form action="{{route('landing.shuttle.reservation.payment.save', $code)}}" method="post">
+                            @csrf
+                            @php
+                                $maxTime = date('Y-m-d H:i:s', strtotime($order->created_at . " +15 minutes"))
+                            @endphp
+                            <input type="hidden" id="max-time" value="{{$maxTime}}">
+                            <input type="hidden" name="bank_payment" id="bank-payment-inp">
+                            <input type="submit" value="Lanjutkan Pembayaran" class="btn btn-primary btn-block" id="pay-button">
+                        </form>
                     </div>
                 </div>
             </div>
@@ -138,19 +195,64 @@
 
             AOS.init();
             
-            // $('#date-travel').daterangepicker({
-            //     locale: {
-            //     format: 'YYYY-MM-DD'
-            //     },    
-            //     showDropdowns: true,
-            //     autoApply: true,
-            //     singleDatePicker: true,
-            //     startDate: '2021-10-02',
-            //     minDate: '2021-10-02',
-            //     maxDate: moment().add(30, 'days')
+            var maxTime = $('#max-time').val();
 
-            // });
+            var countDownDate = new Date(maxTime).getTime();
+            console.log(countDownDate, maxTime);
+
+            // Update the count down every 1 second
+            var x = setInterval(function() {
+
+            // Get today's date and time
+            var now = new Date().getTime();
+                
+            // Find the distance between now and the count down date
+            var distance = countDownDate - now;
+                
+            // Time calculations for days, hours, minutes and seconds
+            var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+                
+            // Output the result in an element with id="demo"
+            // document.getElementById("demo").innerHTML = hours.toLocaleString(undefined,{minimumIntegerDigits: 2}) + ":"
+            // + minutes.toLocaleString(undefined,{minimumIntegerDigits: 2}) + ":" + seconds.toLocaleString(undefined,{minimumIntegerDigits: 2});
+            $('#payment_time').text( minutes.toLocaleString(undefined,{minimumIntegerDigits: 2}) + ":" + seconds.toLocaleString(undefined,{minimumIntegerDigits: 2}));
+
+            if (distance < 0) {
+                clearInterval(x);
+                $('#payment_time').text("00:00");
+                const code = "{{$code}}";
+                const url = "/shuttle/reservation/updatestatus/"+code;
+
+                $.ajax({
+                    url: url,
+                    type: "GET",
+                    success: function (data) {
+                        if (data.status == 1 && data.code == 200) {
+                        }
+                    },
+                    error: function (error) {
+                        console.log(error);
+                    }
+                });
+        }
+        }, 1000);
         });
+
+        const chooseBank = (bank_id) => {
+            event.preventDefault();
+            $('.bank-row').each(function(){
+                if(!$(this).hasClass('d-none')){
+                    $(this).addClass('d-none');
+                };
+            });
+
+            $('#bank_row_'+bank_id).removeClass('d-none');
+            $('#bank-payment-inp').val(bank_id);
+
+        }
 
         
     </script>

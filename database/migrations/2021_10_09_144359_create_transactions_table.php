@@ -15,10 +15,11 @@ class CreateTransactionsTable extends Migration
     {
         Schema::create('transactions', function (Blueprint $table) {
             $table->char('bill_code', 20)->primary();
-            $table->bigInteger('user_id')->unsigned();
+            $table->bigInteger('user_id')->unsigned()->nullable();
             $table->char('reservation_code', 20);
             $table->bigInteger('bank_payment_id')->unsigned();
             $table->integer('total');
+            $table->string('bill_photo')->nullable();
             $table->tinyInteger('status');
 
             $table->timestamps();
