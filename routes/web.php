@@ -30,6 +30,10 @@ Route::group(['prefix' => 'shuttle'], function () {
     Route::post('/payment/{code}', 'landing\travelController@savePayment')->name('landing.shuttle.reservation.payment.save');
     // Route::get('/payment/single/{code}', 'landing\travelController@paymentSingle')->name('landing.shuttle.reservation.paymentsingle');
     Route::get('/payment/upload/{code}', 'landing\travelController@uploadTransfer')->name('landing.shuttle.reservation.uploadTransfer');
+    Route::post('/payment/upload/{code}', 'landing\travelController@uploadTransferPost')->name('landing.shuttle.reservation.uploadTransferPost');
+
+    Route::get('/reservation/check', 'landing\travelController@checkReservation')->name('landing.shuttle.reservation.check');
+    Route::get('/reservation/pp', 'landing\travelController@reservationPp')->name('landing.shuttle.reservation.pp.index');
 });
 
 // auth

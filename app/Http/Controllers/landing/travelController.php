@@ -12,7 +12,9 @@ use App\Schedule;
 use App\Ticket;
 use App\Transaction;
 use Illuminate\Http\Request;
+use Carbon\Carbon;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Crypt;
 
 class travelController extends Controller
 {
@@ -22,43 +24,87 @@ class travelController extends Controller
         return view('shuttle.index', compact('cities'));
     }
 
-    public function postSearch(Request $request)
-    {
-        $validatedData = $request->validate([
-            'route_id' => 'required',
-            'date' => 'required',
-        ]);
-
-        $schedules = Schedule::where([
-            ['route_id', '=', $request->route_id],
-            ['date', '=', $request->date],
-        ])->get();
-
-        $this->search($schedules);
-    }
-
     public function search()
     {
-        $route = request()->route;
+        $route_id = request()->route;
         $date = request()->date;
         $option = request()->option;
 
+        if (!$route_id && !$date) {
+            return redirect()->back()->with('failed', 'Silahkan pilih rute dan tanggal');
+        }
+
         $cities = City::get();
+        $now = Carbon::now()->addHour(1);
+        $currentTime = $now->format('H:i:m');
 
-        $schedules = Schedule::with(
-            'routeRef',
-            'vehicleRef',
-            'routeRef.cityDepartureRef',
-            'routeRef.cityArrivalRef'
-        )->where([
-            ['route_id', '=', $route],
-            ['date', '=', $date],
-        ])->get();
+        // check jika ada option PP
+        if (!$option) {
+            $schedules = Schedule::with(
+                'routeRef',
+                'vehicleRef',
+                'routeRef.cityDepartureRef',
+                'routeRef.cityArrivalRef'
+            )->where([
+                ['route_id', '=', $route_id],
+                ['date', '=', $date],
+                ['departure_time', '>', $currentTime]
+            ])->get();
 
-        $route = Route::with('cityDepartureRef', 'cityArrivalRef')->find($route);
+            $route = Route::with('cityDepartureRef', 'cityArrivalRef')->find($route_id);
 
+            return view('shuttle.search', compact('schedules', 'cities', 'route', 'date'));
+        } else {
 
-        return view('shuttle.search', compact('schedules', 'cities', 'route', 'date'));
+            // OPTION PP ON
+            $dateHome = request()->date_home;
+            $route = Route::with('cityDepartureRef', 'cityArrivalRef')->find($route_id);
+            $dateFormat = \Carbon\Carbon::parse($date);
+            $dateFormatHome = \Carbon\Carbon::parse($date);
+
+            $reverseRoute = Route::where(
+                [
+                    ['departure', '=', $route->arrival],
+                    ['arrival', '=', $route->departure]
+                ]
+            )->first();
+
+            $reverseSchedules = collect();
+            if ($reverseRoute) {
+                $reverseSchedules = Schedule::with(
+                    'routeRef',
+                    'vehicleRef',
+                    'routeRef.cityDepartureRef',
+                    'routeRef.cityArrivalRef'
+                )->where([
+                    ['route_id', '=', $reverseRoute->id],
+                    ['date', '=', $dateHome],
+                ])->get();
+            }
+
+            $schedules = Schedule::with(
+                'routeRef',
+                'vehicleRef',
+                'routeRef.cityDepartureRef',
+                'routeRef.cityArrivalRef'
+            )->where([
+                ['route_id', '=', $route_id],
+                ['date', '=', $date],
+            ])->get();
+
+            return view('shuttle.pp.search', compact(
+                'schedules',
+                'reverseSchedules',
+                'cities',
+                'route',
+                'reverseRoute',
+                'date',
+                'option',
+                'dateHome',
+                'dateFormat',
+                'dateFormatHome'
+            ));
+        }
     }
 
     public function createReservation()
@@ -81,8 +127,40 @@ class travelController extends Controller
             ['id', '=', $id],
         ])->first();
 
+
+
         if ($schedule) {
             return view('shuttle.reservation', compact('code', 'schedule', 'id'));
+        }
+
+        return redirect()->route('landing.shuttle.index')->with('failed', 'Jadwal tidak tersedia');
+    }
+
+    public function reservationPp()
+    {
+        $roundScheduleId = request()->round_schedule_id;
+        $tripScheduleId = request()->trip_schedule_id;
+
+        $roundSchedule = Schedule::with(
+            'routeRef',
+            'vehicleRef',
+            'routeRef.cityDepartureRef',
+            'routeRef.cityArrivalRef'
+        )->where([
+            ['id', '=', $roundScheduleId],
+        ])->first();
+
+        $tripSchedule = Schedule::with(
+            'routeRef',
+            'vehicleRef',
+            'routeRef.cityDepartureRef',
+            'routeRef.cityArrivalRef'
+        )->where([
+            ['id', '=', $tripScheduleId],
+        ])->first();
+
+        if ($roundSchedule && $tripSchedule) {
+            return view('shuttle.pp.reservation', compact('roundSchedule', 'tripSchedule'));
         }
 
         return redirect()->route('landing.shuttle.index')->with('failed', 'Jadwal tidak tersedia');
@@ -98,6 +176,7 @@ class travelController extends Controller
             'total_seat' => 'required',
             'price' => 'required',
         ]);
+
 
         try {
 
@@ -124,7 +203,8 @@ class travelController extends Controller
                 $schedule = Schedule::find($request->schedule_id);
 
                 foreach ($request->seat_number as $key => $item) {
-                    $check_ticket = Ticket::latest()->first();
+                    $check_ticket = Ticket::latest('ticket_code')->first('ticket_code');
+
                     if ($check_ticket) {
                         $ticket_parts =  preg_split("/[-]/", $check_ticket->ticket_code);
                         (string)$new_number = sprintf("%07d", (int)$ticket_parts[1] + 1);
@@ -132,6 +212,7 @@ class travelController extends Controller
                     } else {
                         $ticket_code = "TST-0000001";
                     }
+
                     $ticket = new Ticket();
                     $ticket->ticket_code = $ticket_code;
                     $ticket->reservation_code = $order->code;
@@ -143,7 +224,8 @@ class travelController extends Controller
 
             return redirect()->route('landing.shuttle.reservation.payment', $order->code);
         } catch (\Throwable $th) {
-            return redirect()->back()->with('failed', 'Reservasi gagal');
+            dd($th);
+            // return redirect()->back()->with('failed', 'Reservasi gagal');
         }
     }
 
@@ -158,7 +240,7 @@ class travelController extends Controller
 
             $tickets = Ticket::whereHas('reservationRef', function ($query) use ($scheduleId) {
                 $query->where('schedule_id', $scheduleId);
-            })->get();
+            })->where('status', 1)->get();
 
             return response()->json([
                 "code" => 200,
@@ -234,7 +316,53 @@ class travelController extends Controller
 
     public function uploadTransfer($code)
     {
-        return view('shuttle.upload_transfer', compact('code'));
+        $transaction = Transaction::where('reservation_code', $code)->first();
+        if ($transaction) {
+            return view('shuttle.upload_transfer', compact('code', 'transaction'));
+        }
+    }
+
+    public function uploadTransferPost(Request $request, $code)
+    {
+        if ($request->file('bukti_image')) {
+            $resorcePhoto = $request->file('bukti_image');
+            $namePhoto  = "butki_transfer_" . rand(00000, 99999) . "." . $resorcePhoto->getClientOriginalExtension();
+            $resorcePhoto->move(\base_path() . "/public/assets/bukti-transfer/", $namePhoto);
+
+            $transac = Transaction::where('reservation_code', $code)->first();
+            if ($transac) {
+                $transac->bill_photo = $namePhoto;
+                $transac->status = 1;
+                $transac->save();
+
+                return "berhasil";
+            }
+        }
+    }
+
+    public function checkReservation()
+    {
+        $code = request()->code;
+
+        if ($code) {
+            $order = Reservation::with(
+                'scheduleRef',
+                'ticketRef',
+                'scheduleRef.routeRef',
+                'scheduleRef.vehicleRef',
+                'scheduleRef.routeRef.cityDepartureRef',
+                'scheduleRef.routeRef.cityArrivalRef',
+                'transactionRef'
+            )->find($code);
+
+            if ($order) {
+                return view('shuttle.check_reservation', compact('code', 'order'));
+            }
+
+            return redirect()->route('landing.shuttle.index')->with('failed', 'Data reservasi tidak tersedia');
+        }
+
+        return redirect()->route('landing.shuttle.index')->with('failed', 'Harap isi kode  reservasi dengan benar');
     }
 
     public function getRouteByDeparture(Request $request)
@@ -259,13 +387,29 @@ class travelController extends Controller
     {
         try {
             $order = Reservation::find($code);
+
             if ($order) {
-                $order->status = 0;
-                $order->save();
-                return response()->json([
-                    'code' => 200,
-                    'status' => 1
-                ]);
+                if ($order->status == 1) {
+                    $order->status = 0;
+                    $order->save();
+
+                    $tickets = Ticket::where('reservation_code', $code)->get();
+
+                    foreach ($tickets as $ticket) {
+                        $ticket->status = 0;
+                        $ticket->save();
+                    }
+
+                    return response()->json([
+                        'code' => 200,
+                        'status' => 1
+                    ]);
+                } else {
+                    return response()->json([
+                        'code' => 200,
+                        'status' => 2
+                    ]);
+                }
             }
 
             return response()->json([

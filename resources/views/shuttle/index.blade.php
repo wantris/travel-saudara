@@ -58,13 +58,13 @@
                     <div class="col-12 font-weight-bold pb-2 mt-3">
                         Cek Reservasi
                     </div>
-                    <form action="https://naikbhinneka.com/shuttle/check" class="form-horizontal form-validation" method="post" accept-charset="utf-8">
+                    <form action="{{route('landing.shuttle.reservation.check')}}" class="form-horizontal form-validation" method="get" accept-charset="utf-8">
                         <div class="col-12 pb-3 pt-2">
                             <div class="input-group">
                                 <span class="input-group-text border-1 border-danger rounded-start bg-white">
                                     &nbsp;<i class="fas fa-clipboard-list text-danger"></i>&nbsp;
                                 </span>
-                                <input type="text" name="booking_id" class="form-control border-danger" placeholder="(TORDER-XXXX-XXX)" style="height: 40px !important;">
+                                <input type="text" name="code" class="form-control border-danger" placeholder="(ODR-XXXXXXX)" style="height: 40px !important;">
                                 <button type="submit" class="btn btn-danger rounded-end">
                                     <i class="fas fa-search"></i>
                                 </button>
@@ -99,13 +99,26 @@
                                 <span class="input-group-text border-1 rounded-start bg-white">
                                     &nbsp;<i class="fas fa-calendar-alt text-danger"></i>&nbsp;
                                 </span>
-                                <input type="text" id="date-travel" name="date" class="form-control rounded-end" name="tanggal" id="ticketing-picker" readonly="">
+                                <input type="text" id="date-travel" name="date" class="form-control rounded-end"  id="ticketing-picker" readonly="">
+                            </div>
+                        </div>
+                        <div class="d-none" id="return-date-container">
+                            <div class="px-3 mt-3 mb-2 font-weight-bold">
+                                Tanggal Pulang
+                            </div>
+                            <div class="col-12 pb-2" style="padding-right:8%">
+                                <div class="input-group">
+                                    <span class="input-group-text border-1 rounded-start bg-white">
+                                        &nbsp;<i class="fas fa-calendar-alt text-danger"></i>&nbsp;
+                                    </span>
+                                    <input type="text" id="date-home-travel" name="date_home" class="form-control rounded-end" id="ticketing-picker" readonly="">
+                                </div>
                             </div>
                         </div>
                         <div class="col-12 mt-3 d-flex">
                             <div class="switch-wrap">
                                 <div class="primary-switch border">
-                                    <input type="checkbox" name="option" id="primary-switch" checked>
+                                    <input type="checkbox" onchange="optionTravel()" name="option" id="primary-switch">
                                     <label for="primary-switch"></label>
                                 </div>
                             </div>
@@ -163,7 +176,7 @@
             var myBG = $(".bradcam_area").data('bg');
             $(".bradcam_area").css('background', 'url('+myBG+')');
             
-            $('#date-travel').daterangepicker({
+            $('#date-travel, #date-home-travel').daterangepicker({
                 locale: {
                 format: 'YYYY-MM-DD'
                 },    
@@ -176,6 +189,15 @@
 
             });
         });
+
+        const optionTravel = () => {
+
+            if($('#primary-switch').is(':checked')){
+                $('#return-date-container').removeClass('d-none');
+            }else{
+                $('#return-date-container').addClass('d-none');
+            }
+        }
 
         $('#departure-select').on('change', function(){
             let value = $(this).val();

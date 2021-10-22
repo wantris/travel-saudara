@@ -18,4 +18,9 @@ class Reservation extends Model
     {
         return $this->belongsTo(Schedule::class, 'schedule_id', 'id');
     }
+
+    public function transactionRef()
+    {
+        return $this->belongsTo(Transaction::class,  'code', 'reservation_code');
+    }
 }

@@ -138,7 +138,6 @@
                                     @else
                                         <button type="button" disabled class="btn btn-secondary btn-block">Pesan Sekarang</button>
                                     @endif
-                                    
                                 </form>
                             </div>
                         </div>
